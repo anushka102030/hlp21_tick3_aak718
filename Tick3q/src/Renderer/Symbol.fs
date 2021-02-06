@@ -20,25 +20,45 @@ type Model = Unit // No model needed
 
 let posOf x y = {X=x;Y=y} // helper
 
+
+let makestringlist lst = 
+    lst 
+    |> List.map (fun i -> i.ToString())
+
 // add your own functions as needed
-
-
+let makeReactElementList comp lst= 
+    let strList = makestringlist lst
+    let index = List.indexed strList
+    index
+    |> List.map 
+        (fun (x,y)-> 
+            text [
+                X (float comp.X + 450.)
+                Y ( float comp.Y + 200. + (float x * 35.))
+                Style [
+                TextAnchor "middle" // left/right/middle: horizontal algnment vs (X,Y)
+                DominantBaseline "hanging" // auto/middle/hanging: vertical alignment vs (X,Y)
+                FontSize "30px"
+                FontWeight "Bold"
+                Fill "Black"]
+                ] [str <| sprintf "%s" y]                
+        ) 
 //-----------------------------------------------------------------------------------------//
 
 
 /// write this for Tick3 using your modified ComponentType
 /// you may add to type definition in CommonTypes
-let makeBusDecoderComponent (pos:XYPos) (w: int) (a: int) (n: int) = failwithf "Not implemented"
-
-/// demo function - not needed for Tick3 answer
-let makeDummyComponent (pos: XYPos): Component =
-    { 
-        X = int pos.X
-        Y = int pos.Y
-        W = 0 // dummy
-        H = 0 // dummy
-        Type = Not // dummy
-    }
+let makeBusDecoderComponent (pos:XYPos) (w: int) (a: int) (n: int) = 
+   {
+       X = int pos.X
+       Y = int pos.Y
+       H = 0
+       W = w
+       A = a
+       N = n
+       Type = BusDecoder
+   }
+    //failwithf "Not implemented"
 
 //-----------------------Elmish functions with no content in Tick3----------------------//
 
@@ -55,85 +75,101 @@ let update (msg : Msg) (model : Model): Model*Cmd<'a>  =
 
 /// Tick3 answer
 let busDecoderView (comp: Component) = 
-    failwithf "Not implemented"
-
-/// demo function can be deleted
-let busDecoderViewDummy (comp: Component) = 
     let fX = float comp.X
-    let fY = float comp.Y 
-    // in real code w,a,n would come from the component, but as the busDecoder case is not yet written this
-    // is a workaround compatible with the dummy components
-    let w,a,n = if fX < 100. then (3,0,8) else (4,3,5) // workaround
-    //
-    // This code demonstrates svg transformations, not needed for Tick3 but useful.
-    // The elmish react syntax here uses CSS style transforms, not SVG attribute transforms. They are different.
-    // In addition, svg elements transform under css differently from html.
-    // See https://css-tricks.com/transforms-on-svg-elements/ for details if needed.
-    //
-    let scaleFactor=1.0 // to demonstrate svg scaling
-    let rotation=0 // to demonstrate svg rotation (in degrees)
-    g   [ Style [ 
+    let fY = float comp.Y
+    let lst = [comp.A..(comp.A + comp.N - 1)]
+    let reactElementList = makeReactElementList comp lst
+
+    let scaleFactor = 1.0 //to demonstrate SVG scaling 
+    let rotation = 0
+    g   [ Style [
             // the transform here does rotation, scaling, and translation
             // the rotation and scaling happens with TransformOrigin as fixed point first
-            TransformOrigin "0px 50px" // so that rotation is around centre of line
-            Transform (sprintf "translate(%fpx,%fpx) rotate(%ddeg) scale(%f) " fX fY rotation scaleFactor )
-            ]
-        
-        ]  // g optional attributes in first list
-        // use g svg element (SVG equivalent of div) to group any number of ReactElements into one.
-        // use transform with scale and/or translate and/or rotate to transform group
+                TransformOrigin "0px 0px" // so that rotation is around centre of line
+                Transform (sprintf "translate(%fpx,%fpx) rotate(%ddeg) scale(%f) " fX fY rotation scaleFactor )
+            ]       
+        ] 
         [
-            polygon [ // a demo svg polygon triangle
-                SVGAttr.Points "10,10 900,900 10,900"
-                SVGAttr.StrokeWidth "5px"
+            rect [ //a svg rectangle
+                SVGAttr.Width "500"
+                SVGAttr.Height "700"
+                SVGAttr.StrokeWidth "2px"
                 SVGAttr.Stroke "Black"
                 SVGAttr.FillOpacity 0.1
-                SVGAttr.Fill "Blue"] []
-            line [X1 0.; Y1 0.; X2 0.; Y2 (100.) ; Style [Stroke "Black"]] [
-             // child elements of line do not display since children of svg are dom elements
-             // and svg will only display on svg canvas, not in dom.
-             // hence this is not used
-            ]
-            text [ // a demo text svg element
-                X 0.; 
-                Y 100.; 
+                SVGAttr.Fill "Grey"
+                SVGAttr.TextAnchor "middle"
+                X fX
+                Y fY
+            ] []
+            
+            text [
+                X (fX + 220.) 
+                Y (fY + 50.)
                 Style [
-                    TextAnchor "middle" // left/right/middle: horizontal algnment vs (X,Y)
-                    DominantBaseline "hanging" // auto/middle/hanging: vertical alignment vs (X,Y)
-                    FontSize "10px"
-                    FontWeight "Bold"
-                    Fill "Blue" // demo font color
-                ]
-            ] [str <| sprintf "X=%.0f Y=%.0f" fX fY] // child of text element is text to display
-    ]
-       
+                TextAnchor "middle" // left/right/middle: horizontal algnment vs (X,Y)
+                DominantBaseline "hanging" // auto/middle/hanging: vertical alignment vs (X,Y)
+                FontSize "30px"
+                FontWeight "Bold"
+                Fill "Black" ]// demo font color   
+                ] [str <| sprintf "Bus Decode" ]
 
+            text [
+                X (fX + 30.)
+                Y (fY + 300.)
+                Style [
+                TextAnchor "middle" // left/right/middle: horizontal algnment vs (X,Y)
+                DominantBaseline "hanging" // auto/middle/hanging: vertical alignment vs (X,Y)
+                FontSize "30px"
+                FontWeight "Bold"
+                Fill "Black" ]// demo font color   
+                ] [str <| sprintf "In" ]
 
+            g    [ Style [] ] reactElementList
+
+             
+        ] 
+    
+            
+        
 /// View function - in this case view is independent of model
 let view (model : Model) (dispatch : Msg -> unit) =    
     [   // change for Tick3 answer
-        makeDummyComponent {X=100.; Y=20.} // for Tick 3 two components
-        makeDummyComponent {X=200.; Y=20.} 
+      makeBusDecoderComponent {X=0.; Y=20.} 4 5 5 // for Tick 3 two components
+      makeBusDecoderComponent {X=300.; Y=20.} 3 0 8
     ] 
-    |> List.map busDecoderViewDummy // change for Tick3 answer
+    |> List.map busDecoderView  // change for Tick3 answer
     |> (fun svgEls -> 
         svg [
             Style [
                 Border "3px solid green"
-                Height 200.
-                Width 300.   
+                Height 1000.
+                Width 1500.   
             ]
         ]   svgEls )
+
 
 
 type ValidateError =
    | WIsInvalid // ignoring a,n
    | AIsInvalid // for given w, ignoring n
    | NIsInvalid // for given a,w
+   | TypeInvalid
 
 /// Tick3 answer
 let busDecoderValidate (comp:Component) : Result<Component, ValidateError*string> =
-    failwithf "Not implemented"
+    match comp.Type with 
+    | BusDecoder -> 
+        match comp.W with 
+        | w when w <= 0 -> Error (WIsInvalid,"w is out of range!")
+        | _ ->
+            match comp.A with 
+            | a when a < 0 || float a > (2.0** float comp.W) - 1.0 -> Error (AIsInvalid, "a is out of range!")
+            | _ -> 
+                match comp.N with 
+                | n when n <= 0 || float n > (2.0 ** float comp.W) - float comp.A -> Error (NIsInvalid, "n is out of range!")
+                | _ -> Ok comp
+    | _ -> Error (TypeInvalid, "Not a bus decoder component!")      
+    
     
 
 

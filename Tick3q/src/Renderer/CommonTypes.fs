@@ -1,22 +1,22 @@
 module CommonTypes
     open Fable.Core
 
-(*******************************************************************************************************************
+    (*******************************************************************************************************************
 
-TICK 3
-------
+    TICK 3
+    ------
 
-This file contains the some of the core types currently used by Issie. For Tick 3 you need consider only a few of these types - most
-are tagged as "not needed"
+    This file contains the some of the core types currently used by Issie. For Tick 3 you need consider only a few of these types - most
+    are tagged as "not needed"
 
-The real Issie types have been simplified here.
+    The real Issie types have been simplified here.
 
-*********************************************************************************************************************)
+    *********************************************************************************************************************)
 
     let draw2dCanvasWidth = 3000 // not relevant Tick 3
     let draw2dCanvasHeight = 2000 // not relevant Tick 3
 
-   
+
 
     /// Name identified the LoadedComponent used.
     /// The labels define legends on symbol.
@@ -58,6 +58,7 @@ The real Issie types have been simplified here.
         // No initial state for DFF or Register? Default 0.
         | DFF | DFFE | Register of BusWidth: int | RegisterE of BusWidth: int 
         | AsyncROM of Memory | ROM of Memory | RAM of Memory // memory is contents
+        | BusDecoder 
 
     /// Component type (cut-down for Tick3)
     /// Id uniquely identifies the component within a sheet and is used by draw2d library.
@@ -68,9 +69,11 @@ The real Issie types have been simplified here.
         Y : int // top of component rectangle Y position on canvas
         H : int // Y value (height) of bounding box
         W : int // X value (width) of rectangle bounding box
+        A : int 
+        N : int 
     }
 
-    
+
     //=======//
     // Other //
     //=======//
@@ -108,5 +111,5 @@ The real Issie types have been simplified here.
     /// For I/O/labelIO components a width indication eg (7:0) is also displayed, but NOT included here
     [<Erase>]
     type ComponentLabel   = | ComponentLabel of string
-    
+
 
