@@ -34,15 +34,17 @@ let makeReactElementList comp lst=
         (fun (x,y)-> 
             text [
                 X (float comp.X + 450.)
-                Y ( float comp.Y + 200. + (float x * 35.))
+                Y ( float comp.Y + (1000./float index.Length) + (float x * 35.))
                 Style [
                 TextAnchor "middle" // left/right/middle: horizontal algnment vs (X,Y)
                 DominantBaseline "hanging" // auto/middle/hanging: vertical alignment vs (X,Y)
-                FontSize "30px"
+                FontSize (1000 / (index.Length + 30)) 
                 FontWeight "Bold"
                 Fill "Black"]
                 ] [str <| sprintf "%s" y]                
         ) 
+
+
 //-----------------------------------------------------------------------------------------//
 
 
@@ -161,13 +163,13 @@ let busDecoderValidate (comp:Component) : Result<Component, ValidateError*string
     | BusDecoder -> 
         match comp.W with 
         | w when w <= 0 -> Error (WIsInvalid,"w is out of range!")
-        | _ ->
+        | w ->
             match comp.A with 
             | a when a < 0 || float a > (2.0** float comp.W) - 1.0 -> Error (AIsInvalid, "a is out of range!")
-            | _ -> 
+            | a -> 
                 match comp.N with 
                 | n when n <= 0 || float n > (2.0 ** float comp.W) - float comp.A -> Error (NIsInvalid, "n is out of range!")
-                | _ -> Ok comp
+                | n -> Ok comp
     | _ -> Error (TypeInvalid, "Not a bus decoder component!")      
     
     
