@@ -34,11 +34,11 @@ let makeReactElementList comp lst=
         (fun (x,y)-> 
             text [
                 X (float comp.X + 450.)
-                Y ( float comp.Y + (1000./float index.Length) + (float x * 35.))
+                Y ( float comp.Y +  (float x * 35.) + 200.)
                 Style [
                 TextAnchor "middle" // left/right/middle: horizontal algnment vs (X,Y)
                 DominantBaseline "hanging" // auto/middle/hanging: vertical alignment vs (X,Y)
-                FontSize (1000 / (index.Length + 30)) 
+                FontSize "30px" 
                 FontWeight "Bold"
                 Fill "Black"]
                 ] [str <| sprintf "%s" y]                
@@ -94,7 +94,7 @@ let busDecoderView (comp: Component) =
         [
             rect [ //a svg rectangle
                 SVGAttr.Width "500"
-                SVGAttr.Height "700"
+                SVGAttr.Height (lst.Length * 80)
                 SVGAttr.StrokeWidth "2px"
                 SVGAttr.Stroke "Black"
                 SVGAttr.FillOpacity 0.1
@@ -117,7 +117,7 @@ let busDecoderView (comp: Component) =
 
             text [
                 X (fX + 30.)
-                Y (fY + 300.)
+                Y (fY + 250. + float lst.Length)
                 Style [
                 TextAnchor "middle" // left/right/middle: horizontal algnment vs (X,Y)
                 DominantBaseline "hanging" // auto/middle/hanging: vertical alignment vs (X,Y)
@@ -144,7 +144,7 @@ let view (model : Model) (dispatch : Msg -> unit) =
         svg [
             Style [
                 Border "3px solid green"
-                Height 1000.
+                Height 10000.
                 Width 1500.   
             ]
         ]   svgEls )
